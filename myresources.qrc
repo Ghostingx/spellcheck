@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/myImages">
+        <file>images/3effc4eb231861cf168baa34c4352372.jpg</file>
+        <file>images/324fed48cee77910de801b67f439a5a4.jpg</file>
+        <file>images/c8e796b42411ad10f6e441967e9afd85.jpg</file>
+        <file>images/cd0db6c00a00f8140d8259c2ec8777ad.jpg</file>
+    </qresource>
+</RCC>
