@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QCloseEvent>
 #include <QString>
+#include "spellcheck.h"
 namespace Ui {
 class MainWindow;
 }
@@ -21,7 +22,7 @@ public:
     bool save();      // 保存操作
     bool saveAs();    // 另存为操作
     bool saveFile(const QString &fileName); // 保存文件
-    QString spellCheck();
+    QString spellChecks();
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -49,12 +50,25 @@ private slots:
 
     void on_actionspellcheck_triggered();
 
+    void on_actionselectAll_triggered();
+
+    void on_actionclear_triggered();
+
+    void on_actionredo_triggered();
+
+    void on_actionfind_triggered();
+
+    void on_actionzoomIn_triggered();
+
+    void on_actionzoomOut_triggered();
+
 private:
     Ui::MainWindow *ui;
     // 为真表示文件没有保存过，为假表示文件已经被保存过了
     bool isUntitled;
     // 保存当前文件的路径
     QString curFile;
+    spellCheck *sc = new spellCheck("/Users/ghost/Documents/xcode/spellCheck/spellCheck/model.txt");
 };
 
 #endif // MAINWINDOW_H

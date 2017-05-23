@@ -2,8 +2,8 @@
 #define MYEXCEPTION_H
 
 #include <string>
-
-//using namespace std;
+#include <iostream>
+using namespace std;
 
 // illegal parameter value
 class illegalParameterValue

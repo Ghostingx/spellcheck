@@ -1,60 +1,73 @@
-#ifndef CHECK_H
-#define CHECK_H
-
+#include "spellcheck.h"
 #include <iostream>
 //#include <map>
 #include <stdio.h>
 #include <fstream>
 #include <string>
 #include <time.h>
-#include "hashtable.h"
-//#include"vector"
+#include <algorithm>    // transform
 using namespace std;
 
-typedef struct node
-{
-    string correctWord;
-    int count;
-}correction;
-void loadDic();
-void search(string input);
-void find(string s);
-correction c;
-//map<string,int> dic;
-hashTable<string,int> dic(100000);
-string check(string f)
-{
+#define DEBUG
+spellCheck::spellCheck(string file){
+
+#ifdef DEBUG
     clock_t start,end;
     start = clock();
-    loadDic();
+#endif
+    loadDic(file);
+#ifdef DEBUG
     end = clock();
-    cout<<(end-start)/1000.0<<"ms"<<endl;
+    cout<<"加载用时:"<<(end-start)/1000.0<<"ms"<<endl;
+#endif
+
+}
+spellCheck::~spellCheck(){
+    delete dic;
+    dic = NULL;
+}
+
+string spellCheck::check(string f)
+{
+
     ifstream word(f,std::ios::in);
     if(!word)
         cout<<"打开文件失败!!!\n";
-    string s,wordList[100],rightList[100],wrongList[100];
+    string s,wordList[1000],rightList[1000],wrongList[1000];
     int n=0;
-
+#ifdef DEBUG
+    clock_t start,end;
     start = clock();
-
+#endif
     while(word>>s)
     {
         wordList[n++]=s;
     }
     word.close();
     int i=0,k=0;
-    string input;
+    string input,input2;
     while(i<n)
     {
 
-        c.count=-1;
+        c.count=1;
+        c.correctWord="";
         input=wordList[i];
-        if(dic.find(input)>0)
-            rightList[i]=input;
+        input2=input;
+        transform(input2.begin(),input2.end(),input2.begin(),::tolower);
+        if(dic->find(input)!=NULL||dic->find(input2)!=NULL)
+            ;//rightList[i]=input;
         else
         {
+         //   cout<<"haha";
             search(input);
-            if(dic.find(c.correctWord)!=0)
+        //    cout<<"co "<<c.correctWord<<"  co";
+            if(c.correctWord==""||c.correctWord==input){
+                cout<<"co "<<c.correctWord<<"  co";
+                i++;
+                continue;
+            }
+
+            if(dic->find(c.correctWord)->second!=0)
             {
                 wrongList[k] = input;
                 rightList[k]=c.correctWord;
@@ -65,13 +78,13 @@ string check(string f)
         }
         i++;
     }
-
+#ifdef DEBUG
     end = clock();
     cout<<(end-start)/1000.0<<"ms"<<endl;
-
+#endif
     int j=0;
     string text ="";
-    while(j<n){
+    while(j<k){
         cout<<wrongList[j]<<"->";
         cout<<rightList[j]<<"   ";
         text += wrongList[j];
@@ -93,31 +106,33 @@ string check(string f)
     return text;
 }
 
-void loadDic()
-{   ifstream fin("/Users/ghost/Documents/xcode/spellCheck/spellCheck/model.txt",std::ios::in);
+void spellCheck::loadDic(string file)
+{   ifstream fin(file,std::ios::in);
     if(!fin)
         cout<<"打开文件失败!!!\n";
     string s;
     while(fin>>s)
     {
-        if(dic.find(s)==NULL)
+        if(dic->find(s)==NULL)
         {
            // dic[s]=1;
 
-            dic.insert(pair<string, int>(s,1));
+            dic->insert(pair<string, int>(s,1));
         }
         else
         {
            // int count=dic.at(s);
-            int count= dic.find(s)->second;
-            dic.find(s)->second=count+1;
+            int count= dic->find(s)->second;
+            dic->find(s)->second=count+1;
             //dic[s]=(count+1);
         }
     }
     fin.close();
+ //   dic->output(cout);
+
 }
 
-void search(string input)
+void spellCheck::search(string input)
 {
     char set[27]="abcdefghijklmnopqrstuvwxyz";
     int length=input.length();
@@ -158,15 +173,15 @@ void search(string input)
             find(temp);
         }
 }
-void find(string s)
+void spellCheck::find(string s)
 {
     int number=0;
-    if(dic.find(s)==NULL)
+    if(dic->find(s)==NULL)
     {
         number=1;
     }
     else
-        number=dic.find(s)->second;
+        number=dic->find(s)->second;
         //number=dic.at(s);
 
     if(number>c.count)
@@ -175,5 +190,3 @@ void find(string s)
         c.correctWord=s;
     }
 }
-
-#endif // CHECK_H

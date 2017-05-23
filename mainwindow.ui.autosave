@@ -264,19 +264,27 @@
    </property>
   </action>
   <action name="actionzoomIn">
+   <property name="icon">
+    <iconset resource="myresources.qrc">
+     <normaloff>:/myImages/images/magnify_plus.png</normaloff>:/myImages/images/magnify_plus.png</iconset>
+   </property>
    <property name="text">
     <string>zoomIn</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+-</string>
+    <string>Ctrl+=</string>
    </property>
   </action>
   <action name="actionzoomOut">
+   <property name="icon">
+    <iconset resource="myresources.qrc">
+     <normaloff>:/myImages/images/magnify_minus.png</normaloff>:/myImages/images/magnify_minus.png</iconset>
+   </property>
    <property name="text">
     <string>zoomOut</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+=</string>
+    <string>Ctrl+-</string>
    </property>
   </action>
  </widget>

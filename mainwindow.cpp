@@ -5,7 +5,9 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <string>
-#include "check.h"
+#include<iostream>
+using namespace std;
+//#include "check.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,15 +20,16 @@ MainWindow::MainWindow(QWidget *parent) :
     // 初始化窗口标题为文件名
     setWindowTitle(curFile);
     ui->setupUi(this);
-    QAction *editAction = new QAction(tr("&select all"),this);
-    QIcon icon(":/myImages/images/cd0db6c00a00f8140d8259c2ec8777ad.jpg");
-    editAction->setIcon(icon);
-    editAction->setShortcut(QKeySequence(tr("Ctrl+A")));
-    ui->menuedit->addAction(editAction);
+//    QAction *editAction = new QAction(tr("&select all"),this);
+ //   QIcon icon(":/myImages/images/cd0db6c00a00f8140d8259c2ec8777ad.jpg");
+ //   editAction->setIcon(icon);
+ //   editAction->setShortcut(QKeySequence(tr("Ctrl+A")));
+ //   ui->menuedit->addAction(editAction);
 }
 
 MainWindow::~MainWindow()
 {
+    delete sc;
     delete ui;
 }
 
@@ -34,7 +37,7 @@ void MainWindow::newFile()
 {
     if (maybeSave()) {
            isUntitled = true;
-           curFile = tr("未命名.txt");
+           curFile = tr("untitled.txt");
            setWindowTitle(curFile);
            ui->textEdit->clear();
            ui->textEdit->setVisible(true);
@@ -47,13 +50,13 @@ bool MainWindow::maybeSave()
     if (ui->textEdit->document()->isModified()) {
     // 自定义一个警告对话框
            QMessageBox box;
-           box.setWindowTitle(tr("警告"));
+           box.setWindowTitle(tr("warning!"));
            box.setIcon(QMessageBox::Warning);
-           box.setText(curFile + tr(" 尚未保存，是否保存？"));
-           QPushButton *yesBtn = box.addButton(tr("是(&Y)"),
+           box.setText(curFile + tr(" the file is not saved,save or not？"));
+           QPushButton *yesBtn = box.addButton(tr("yes(&Y)"),
                             QMessageBox::YesRole);
-           box.addButton(tr("否(&N)"), QMessageBox::NoRole);
-           QPushButton *cancelBut = box.addButton(tr("取消"),
+           box.addButton(tr("no(&N)"), QMessageBox::NoRole);
+           QPushButton *cancelBut = box.addButton(tr("cancel"),
                             QMessageBox::RejectRole);
            box.exec();
            if (box.clickedButton() == yesBtn)
@@ -77,7 +80,7 @@ bool MainWindow::save()
 bool MainWindow::saveAs()
 {
     QString fileName = QFileDialog::getSaveFileName(this,
-                                             tr("另存为"),curFile);
+                                             tr("save as"),curFile);
        if (fileName.isEmpty()) return false;
        return saveFile(fileName);
 }
@@ -90,7 +93,7 @@ bool MainWindow::saveFile(const QString &fileName)
 
            // %1和%2分别对应后面arg两个参数，/n起换行的作用
            QMessageBox::warning(this, tr("多文档编辑器"),
-                       tr("无法写入文件 %1：/n %2")
+                       tr("can't write file %1：/n %2")
                       .arg(fileName).arg(file.errorString()));
            return false;
        }
@@ -112,7 +115,7 @@ bool MainWindow::loadFile(const QString &fileName)
    QFile file(fileName); // 新建QFile对象
    if (!file.open(QFile::ReadOnly | QFile::Text)) {
        QMessageBox::warning(this, tr("多文档编辑器"),
-                             tr("无法读取文件 %1:\n%2.")
+                             tr("can't read file %1:\n%2.")
                              .arg(fileName).arg(file.errorString()));
        return false; // 只读方式打开文件，出错则提示，并返回false
    }
@@ -127,7 +130,7 @@ bool MainWindow::loadFile(const QString &fileName)
    return true;
 }
 
-QString MainWindow::spellCheck(){
+QString MainWindow::spellChecks(){
 
     QFile file("temp");
         file.open(QIODevice::WriteOnly|QIODevice::Text);
@@ -144,11 +147,18 @@ QString MainWindow::spellCheck(){
        QApplication::setOverrideCursor(Qt::WaitCursor);
        QString text;
        text = ui->textEdit->toPlainText();
+       cout<<text.toStdString()<<endl;
+    //   text.replace(',',' ');
+    //   text.replace('.',' ');
+       //去除文件中的非字母字符
+       text.replace(QRegExp("[.,!#$%^&*()+=:_/<>?']")," ");
+       text.replace("-"," ");
+       cout<<text.toStdString()<<endl;
        out << text;
        file.close();
        QApplication::restoreOverrideCursor();
       // string s = check("/Users/ghost/Documents/xcode/spellCheck/spellCheck/para.txt");
-    string s = check("temp");
+    string s = sc->check("temp");
         QFile::remove("temp");
     return QString::fromStdString(s);
 };
@@ -227,10 +237,45 @@ void MainWindow::on_actioncopy_triggered()
 void MainWindow::on_actionpaste_triggered()
 {
     ui->textEdit->paste();
+    ui->textEdit->find(QRegExp("abc"));
 }
+
+void MainWindow::on_actionselectAll_triggered()
+{
+    ui->textEdit->selectAll();
+}
+
 
 void MainWindow::on_actionspellcheck_triggered()
 {
-    QString text = spellCheck();
+    QString text = spellChecks();
+    if(text==NULL||text=="")
+        text="it seems no wrong spellings!";
     ui->checkLable->setText(text);
+}
+
+
+void MainWindow::on_actionclear_triggered()
+{
+    ui->textEdit->clear();
+}
+
+void MainWindow::on_actionredo_triggered()
+{
+    ui->textEdit->redo();
+}
+
+void MainWindow::on_actionfind_triggered()
+{
+    ui->textEdit->find(QRegExp("abc"));
+}
+
+void MainWindow::on_actionzoomIn_triggered()
+{
+    ui->textEdit->zoomIn();
+}
+
+void MainWindow::on_actionzoomOut_triggered()
+{
+    ui->textEdit->zoomOut();
 }

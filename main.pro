@@ -25,17 +25,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    logindialog.cpp
+    spellcheck.cpp
 
 HEADERS  += mainwindow.h \
-    logindialog.h \
-    hash.h \
     hashtable.h \
     myexception.h \
-    check.h
+    check.h \
+    spellcheck.h
 
-FORMS    += mainwindow.ui \
-    logindialog.ui
+FORMS    += mainwindow.ui
 
 RESOURCES += \
     myresources.qrc

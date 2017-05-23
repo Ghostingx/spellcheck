@@ -2,10 +2,32 @@
 #define HASHTABLE_H
 
 #include <iostream>
-#include "hash.h"  // mapping functions from K to nonnegative integer
+//#include "hash.h"  // mapping functions from K to nonnegative integer
 #include "myexception.h"
 
 using namespace std;
+
+
+
+template <class K> class hash1;
+
+template<>
+class hash1<string>
+{
+public:
+    size_t operator()(const string theKey) const
+    {// Convert theKey to a nonnegative integer.
+        unsigned long hashValue = 0;
+        int length = (unsigned int) theKey.length();
+        for (int i = 0; i < length; i++)
+            hashValue = 5 * hashValue + theKey.at(i);
+
+        return size_t(hashValue);
+    }
+};
+
+
+
 
 template<class K, class E>
 class hashTable
